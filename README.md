@@ -13,7 +13,7 @@ blagodarnost
 transkripcia  
  
  
-##Usage:  
+## Usage:  
 #### to search  
 $ enrutranslate.sh script  
 prescriptive  
@@ -37,7 +37,7 @@ $ enrutranslate.sh p script
    01. noun  
    1) почерк  
   
-###Instalation:  
+### Instalation:  
 git clone --depth=1 https://github.com/vycb/translatecli.git   
 Add enrutranslate.sh somewhere into PATH (~/bin)  
 Create symbolic link ruentranslate.sh (for russian-engliah dictionary)  
