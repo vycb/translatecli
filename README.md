@@ -50,6 +50,8 @@ $ ruentranslate.sh p документ
    document, paper;  
    
 ### Instalation:  
+Download and install the Git command line extension. You only have to set up Git LFS once.  
+git lfs install  
 git clone --depth=1 https://github.com/vycb/translatecli.git   
 Add enrutranslate.sh somewhere into PATH (~/bin)  
 Create symbolic link ruentranslate.sh (for russian-engliah dictionary)  
