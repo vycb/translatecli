@@ -7,7 +7,7 @@ Only dependent's on: gawk, elinks and tar gz
   
 The dictionaries originally ported from chm files.  
 There was a 'Far'-file manager's plugin project. Thanks to the authors.  
-There are additional 3-e pages in the en-ru dictionary:
+There are additional 3-e pages in the en-ru dictionary:  
 dobropogalovat  
 blagodarnost  
 transkripcia  
