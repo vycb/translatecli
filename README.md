@@ -42,7 +42,7 @@ git clone --depth=1 https://github.com/vycb/translatecli.git
 Add enrutranslate.sh somewhere into PATH (~/bin)  
 Create symbolic link ruentranslate.sh (for russian-engliah dictionary)  
 For example: cd ~/bin; ln -s ~/bin/enrutranslate.sh  ~/bin/ruentranslate.sh 
-Add to .bashrc path of cloned repo. For example: export TRANSLATECLI_HOME="$HOME/.vim/doc/translatecli" 
+Add to .bashrc path of cloned repo. For example: export TRANSLATECLI_HOME="$HOME/.vim/doc/translatecli"  
 For look up mod 'trans' application should be installed. See https://github.com/soimort/translate-shell.   
 Also, to lookup in thesaurus.altervista.org, we need to register there, and add reg-key in .config file.  
   
