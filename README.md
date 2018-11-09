@@ -1,9 +1,9 @@
 # translatecli 
-It is a bash based script, engliah-russian and russian-engliah off-line dictionary,
-wich allows to translate in console.  
-engliah-russian - 48523 words  
-russian-engliah - 45678 words  
-Only dependense on: gawk, elinks and bz2  
+It is a bash based script, Engliah-Russian and Russian-Engliah off-line dictionary,
+which allows to translate in console.  
+Engliah-Russian - 48523 words  
+Russian-Engliah - 45678 words  
+Only dependent's on: gawk, elinks and tar gz  
 
 Usage:  
 # to search  
@@ -30,12 +30,14 @@ $ enrutranslate.sh p script
    1) почерк  
   
 Instalation:  
-git clone --depth=1 https://github.com/vycb/translatecli.git  
-  
+git clone --depth=1 https://github.com/vycb/translatecli.git   
 Add enrutranslate.sh somewhere into PATH (~/bin)  
 Create symbolic link ruentranslate.sh (for russian-engliah dictionary)  
-For example: cd ~/bin; ln -s ~/bin/enrutranslate.sh  ~/bin/ruentranslate.sh  
-
+For example: cd ~/bin; ln -s ~/bin/enrutranslate.sh  ~/bin/ruentranslate.sh 
+Add to .bashrc path of cloned repo. For example: export TRANSLATECLI_HOME="$HOME/.vim/doc/translatecli" 
+For look up mod 'trans' application should be installed. See https://github.com/soimort/translate-shell.   
+Also, to lookup in thesaurus.altervista.org, we need to register there, and add reg-key in .config file.  
+  
 $ enrutranslate.sh -h  
 Usage:  
  pattern - to search dictionary. Example: enrutranslate.sh peace  
