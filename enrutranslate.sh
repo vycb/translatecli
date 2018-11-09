@@ -145,7 +145,7 @@ elif [ "$1" = a ]; then
 :<<HELP
  a - add a new page to dictionary. 
      Example: enrutranslate.sh a "look up" "look towards" dic/lookup.txt
-     Where secon argument is a 'append after' index.
+     Where 3-d argument is an 'append after' index, ie append after "look towards".
 HELP
 #}}}
 	#tar -xjOf $lang'translate.tar.bz2' toc.csv | \#{{{
@@ -158,10 +158,11 @@ HELP
 		}' >toc.csv
 
 	gzip -df $lang'translate.tar.gz'
-	tar -r -f $lang'translate.tar' $4 #$page
+	tar -r -f $lang'translate.tar' "$4" 
 	tar --delete -f $lang'translate.tar' toc.csv
 	tar -u -f $lang'translate.tar' toc.csv
-	gzip $lang'translate.tar' #}}}
+	gzip $lang'translate.tar' 
+	#}}}
 
 elif [ "$1" = d ] ; then
 #{{{#{{{
