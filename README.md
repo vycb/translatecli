@@ -1,12 +1,20 @@
 # translatecli 
-It is a bash based script, Engliah-Russian and Russian-Engliah off-line dictionary,
+It is a bash based script, English-Russian and Russian-English off-line dictionary,
 which allows to translate in console.  
-Engliah-Russian - 48523 words  
-Russian-Engliah - 45678 words  
+English-Russian - 48523 words  
+Russian-English - 45678 words  
 Only dependent's on: gawk, elinks and tar gz  
-
-Usage:  
-# to search  
+  
+The dictionaries originally ported from chm files.  
+There was a 'Far'-file manager's plugin project. Thanks to the authors.  
+There are additional 3-e pages in the en-ru dictionary:
+dobropogalovat  
+blagodarnost  
+transkripcia  
+ 
+ 
+##Usage:  
+#### to search  
 $ enrutranslate.sh script  
 prescriptive  
 proscription  
@@ -14,13 +22,13 @@ rescript
 script  
 scriptoria  
 scriptorium  
-# Or  
+#### Or  
 $ enrutranslate.sh ^script   
 script  
 scriptoria  
 scriptorium  
 scriptural  
-# Read page  
+#### Read page  
 $ enrutranslate.sh p script  
    << scrip << script >> scriptoria >>  
   
@@ -29,7 +37,7 @@ $ enrutranslate.sh p script
    01. noun  
    1) почерк  
   
-Instalation:  
+###Instalation:  
 git clone --depth=1 https://github.com/vycb/translatecli.git   
 Add enrutranslate.sh somewhere into PATH (~/bin)  
 Create symbolic link ruentranslate.sh (for russian-engliah dictionary)  
