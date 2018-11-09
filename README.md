@@ -36,7 +36,19 @@ $ enrutranslate.sh p script
   
    01. noun  
    1) почерк  
+		
+$ ruentranslate.sh документ  
+документ  
+документальный  
+документация  
   
+$ ruentranslate.sh p документ  
+   << докуда << документ >> документальный >>  
+  
+   noun  
+   (m.)  
+   document, paper;  
+   
 ### Instalation:  
 git clone --depth=1 https://github.com/vycb/translatecli.git   
 Add enrutranslate.sh somewhere into PATH (~/bin)  
@@ -64,16 +76,5 @@ Usage:
  diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff  
  b - make a backup of dictionary. Example: enrutranslate.sh b  
   
-$ ruentranslate.sh документ  
-документ  
-документальный  
-документация  
-  
-$ ruentranslate.sh p документ  
-   << докуда << документ >> документальный >>  
-  
-   noun  
-   (m.)  
-   document, paper;  
   
 
