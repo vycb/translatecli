@@ -97,7 +97,7 @@ awk -v se="$2" '@include "getXML.awk"
 #echo $lang
 cd $home #> /dev/null 2>&1
 
-if [[ $# -eq 1 ]] && [ $1 != b ] && [ $1 != diff ]; then
+if [[ $# -eq 1 ]] && [ "$1" != b ] && [ "$1" != diff ]; then
 #{{{#{{{	
 :<<HELP
  pattern - to search dictionary. Example: enrutranslate.sh peace
