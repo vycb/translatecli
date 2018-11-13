@@ -14,9 +14,9 @@ fi
 home=${TRANSLATECLI_HOME:="$HOME/.vim/doc/englishtranslate"}
 
 urlencode(){
-	awk 'BEGIN {while (y++ < 125) z[sprintf("%c", y)] = y}
+	awk 'BEGIN {while (y++ < 125) zword[sprintf("%c", y)] = y}
 	{while (y = substr($0, ++j, 1))
-		q = y ~ /[[:alnum:]_.!~*\47()-]/ ? q y : q sprintf("%%%02X", z[y])
+		q = y ~ /[[:alnum:]_.!~*\47()-]/ ? q y : q sprintf("%%%02X", zword[y])
 		print q}'
 }
 
@@ -112,6 +112,15 @@ HELP
       if( $2 ~ se ) print $2;
     }' #}}}
 
+elif [ "$1" = g ]; then
+#{{{#{{{
+:<<HELP
+ g- grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
+HELP
+#}}}
+	tar -xzOf $lang'translate.tar.gz' toc.csv |grep -i "$2"
+	tar -tvzf $lang'translate.tar.gz' |grep -i "$2"
+#}}}
 elif [ "$1" = ts ]; then
 #{{{#{{{
 :<<HELP
@@ -145,22 +154,30 @@ elif [ "$1" = a ]; then
 :<<HELP
  a - add a new page to dictionary. 
      Example: enrutranslate.sh a "look up" "look towards" dic/lookup.txt
-     Where 3-d argument is an 'append after' index, ie append after "look towards".
+		 Where 3-d argument (optional) is an 'append after' index, ie append after "look towards".
 HELP
 #}}}
 	#tar -xjOf $lang'translate.tar.bz2' toc.csv | \#{{{
 	#unzip -c $lang'translate.zip' toc.csv | \#}}}
-	tar -xzOf $lang'translate.tar.gz' toc.csv | \
-	awk -v se="^$3" -v wo="$2" -v pg="$4" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
+	if [[ $# -lt 4 ]]; then
+      #let ln=${#2}-3
+      se=${2:0:3}
+			pg="$3"
+  else
+      se="$3"
+			pg="$4"
+  fi  
+	gzip -df $lang'translate.tar.gz'
+	tar -xOf $lang'translate.tar' toc.csv | \
+	awk -v se="^$se" -v wo="$2" -v pg="$pg" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
 			print 
       if(ins==0 && $2 ~ se ){ print "\"" wo "\",\"" pg "\""; ins=1; }
 		}' >toc.csv
 
-	gzip -df $lang'translate.tar.gz'
-	tar -r -f $lang'translate.tar' "$4" 
 	tar --delete -f $lang'translate.tar' toc.csv
 	tar -u -f $lang'translate.tar' toc.csv
+	tar -r -f $lang'translate.tar' "$pg" 
 	gzip $lang'translate.tar' 
 	#}}}
 
@@ -168,6 +185,7 @@ elif [ "$1" = d ] ; then
 #{{{#{{{
 :<<HELP
  d - delete a page from dictionary. Example: enrutranslate.sh d "look up" dic/lookup.txt
+     A 3-d argument is optional, it's need in case if there is no entry in index file toc.csv
 HELP
 #}}}
  	page=$(getpage "$2")
@@ -180,8 +198,13 @@ HELP
 				print;
 		}' >toc.csv
 
+	if [ "$page" == "" ]; then
+		echo 1:"$page"
+		page="$3"
+		echo 2:"$page"
+	fi
 	gzip -df $lang'translate.tar.gz'
-	if tar -tvzf $lang'translate.tar.gz' |grep -q $page ;then
+	if tar -tvf $lang'translate.tar' |grep -q $page ;then
 		tar --delete -f $lang'translate.tar' $page #$page
 	fi
 	tar --delete -f $lang'translate.tar' toc.csv
@@ -242,12 +265,13 @@ HELP
 		se=$2
 		new=0
 	else
+		# This is new page, then add add as 'a' mode
 		filen=${2// /-}
 		filen="dic/$filen.txt"
 		#filen=dic/${filen,,}.txt
 		if [[ ${#2} -gt 3 ]]; then
-			let ln=${#2}-3
-			se=${2:0:$ln}
+			#let ln=${#2}-3
+			se=${2:0:3}
 		else
 			se="${2}"
 		fi
@@ -264,7 +288,7 @@ HELP
 	awk -v se="$se" -v pg="$filen" -v wo="$2" -v new="$new" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
       if(ins==0 && new==0 && $2 == se || new==1 && ins==0 && $2 ~ se){
-				if(new==1) print
+				if(new==1) print;
 			 	print "\"" wo "\",\"" pg "\""; ins=1; 
 			}
 			else
