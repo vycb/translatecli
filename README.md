@@ -1,6 +1,6 @@
 # translatecli 
-It is a bash based script, English-Russian and Russian-English off-line dictionary,
-which allows to translate in console.  
+
+Bash based off-line dictionary for translation English-Russian and Russian-English in Linux terminal.  
 English-Russian - 48523 words  
 Russian-English - 45678 words  
 Only dependent's on: gawk, elinks and tar gz  
