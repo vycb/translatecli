@@ -1,5 +1,5 @@
 #! /bin/bash -
-. /home/bin/bashruntime.sh
+#. /home/bin/bashruntime.sh
 
 if [ $# -eq 0 -o  "$1" = 'h' -o  "$1" = '-h'  -o "$1" = '--help' ]
 then
