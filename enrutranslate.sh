@@ -4,7 +4,7 @@
 if [ $# -eq 0 -o  "$1" = 'h' -o  "$1" = '-h'  -o "$1" = '--help' ]
 then
 	#awk '/HELP$/{H=1;}; /^HELP$/{H=0}; !/HELP$|^HELP$/{if(H){print}}' "$0"
-  sed -n '/HELP$/,/^HELP$/{/HELP$/d; p}' "$0"  #/HELP$/d
+  sed -n '/^:<<HELP$/,/^HELP$/{/HELP$/d; p}' "$0"  #/HELP$/d
  	exit 0;
 :<<HELP
 Usage:
@@ -147,6 +147,11 @@ elif [ "$1" = t ]; then
 	thesaurus "$1" "$2" "$3"
 
 elif [ "$1"  = p ]; then
+#{{{
+:<<HELP
+ p - get read a page in dictionary. Example: enrutranslate.sh p "look up"
+HELP
+#}}}
 	pageout "$1" "$2" "$3" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d'
 
 elif [ "$1" = a ]; then

@@ -64,6 +64,7 @@ $ enrutranslate.sh -h
 Usage:  
  pattern - to search dictionary. Example: enrutranslate.sh peace  
  ts - full text search in dictionary. Example: enrutranslate.sh ts look  
+ p - get read a page in dictionary. Example: enrutranslate.sh p "look up"  
  a - add a new page to dictionary.   
      Example: enrutranslate.sh a "look up" "look towards" dic/lookup.txt  
      Where 3-d argument is an 'append after' index, ie append after "look towards".  
