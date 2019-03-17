@@ -77,6 +77,6 @@ Usage:
      Example: enrutranslate.sh l peace  
     'trans' (https://github.com/soimort/translate-shell) must be installed for this mod.  
  diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff  
- b - make a backup a dictionary. Example: enrutranslate.sh b   
+ b - backup a dictionary. Example: enrutranslate.sh b   
   
 
