@@ -3,7 +3,7 @@
 Bash based off-line dictionary for translation English-Russian and Russian-English in Linux terminal.  
 English-Russian - 48523 words  
 Russian-English - 45678 words  
-Only dependent's on: gawk, elinks and tar gz  
+Only dependent's on: awk, elinks and tar gz  
   
 The dictionaries originally ported from chm files.  
 There was a 'Far'-file manager's plugin project. Thanks to the authors.  

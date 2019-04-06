@@ -16,7 +16,7 @@ home=${TRANSLATECLI_HOME:="$HOME/.vim/doc/englishtranslate"}
 urlencode(){
 	awk 'BEGIN {while (y++ < 125) zword[sprintf("%c", y)] = y}
 	{while (y = substr($0, ++j, 1))
-		q = y ~ /[[:alnum:]_.!~*\47()-]/ ? q y : q sprintf("%%%02X", zword[y])
+		q = y ~ /[A-Za-z0-9_.!~*\47()-]/ ? q y : q sprintf("%%%02X", zword[y])
 		print q}'
 }
 
