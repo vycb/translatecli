@@ -47,7 +47,7 @@ pageout(){
 	extension="${page##*.}"
 	#debug :$1:$2:$#:$extension:
 	echo -e "PAGEVAR\n$page\nPAGEVAR"
-	if [ $extension = 'txt' ]; then 
+	if [ $extension = 'txt' ]; then
 		tar -xzOf $lang'translate.tar.gz' "$page"
 	else
 		getelinks "$page"
@@ -64,33 +64,7 @@ thesaurus(){
 	#echo $url
 	echo `${cmd} -A 'Mozilla/5.0 (Android; Mobile; rv:62.0) Gecko/62.0 Firefox/62.0' -L -b "PHPSESSID=3c5a1ce42e0bddbb62bbdd0608e3cc97;__cfduid=df62b33881797a9df54020dfc579c21d11539243258" $url`|\
 		#cat tezauras.xml|
-awk -v se="$2" '@include "getXML.awk"
- BEGIN {out="";OFS = " ";
-	while ( getXML("",0) ) { #ARGV[1]
-		if(XITEM == "category" ||XITEM == "synonyms" || XITEM == "antonym") 
-			tg = XITEM
-		if(XTYPE == "DAT"){
-			gsub(" +|\t+|\n+|\t\r+","",XITEM)
-			if(tg == "category" && !TAG[XITEM]){
-				out="" XITEM 
-				TAG[XITEM] = 1
-			}
-			else if(tg == "synonyms"|| tg == "antonym"){
-				if(XITEM!="")
-					out = out "\n" "   -" XITEM
-			}
-		}
-	}
-	if(XERROR){getline S0
-		print XERROR;
-		exit 1;
-	}
- }
- END{ 
- 	if(!out) exit 1;
- 	print "thesaurus.altervista.org:\n","\033[1;38m" se":\n\033[00m", out
-}
- '
+awk -v se="$2" -f getXML.awk -f thesaurusaltervista.awk
 } #}}}
 
 [[ $0 =~ 'enru' ]] &&	lang='enru' || lang='ruen'
@@ -98,7 +72,7 @@ awk -v se="$2" '@include "getXML.awk"
 cd $home #> /dev/null 2>&1
 
 if [[ $# -eq 1 ]] && [ "$1" != b ] && [ "$1" != diff ]; then
-#{{{#{{{	
+#{{{#{{{
 :<<HELP
  pattern - to search dictionary. Example: enrutranslate.sh peace
 HELP
@@ -132,7 +106,7 @@ HELP
 		#echo ext:$ext
 		if [[ "$ext" =~ dic || ! "$ext" || ( "$ext" != txt && "$ext" != htm ) ]]; then continue; fi
 		echo -n .
-		if [ $ext = 'txt' ]; then 
+		if [ $ext = 'txt' ]; then
 			out=`tar -xzOf $lang'translate.tar.gz' "$file"|grep -i "$2"`
 		else
 			out=`getelinks "$file"|grep -i "$2"`
@@ -157,7 +131,7 @@ HELP
 elif [ "$1" = a ]; then
 #{{{#{{{
 :<<HELP
- a - add a new page to dictionary. 
+ a - add a new page to dictionary.
      Example: enrutranslate.sh a "look up" "look towards" dic/lookup.txt
 		 Where 3-d argument (optional) is an 'append after' index, ie append after "look towards".
 HELP
@@ -171,19 +145,19 @@ HELP
   else
       se="$3"
 			pg="$4"
-  fi  
+  fi
 	gzip -df $lang'translate.tar.gz'
 	tar -xOf $lang'translate.tar' toc.csv | \
 	awk -v se="^$se" -v wo="$2" -v pg="$pg" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
-			print 
+			print
       if(ins==0 && $2 ~ se ){ print "\"" wo "\",\"" pg "\""; ins=1; }
 		}' >toc.csv
 
 	tar --delete -f $lang'translate.tar' toc.csv
 	tar -u -f $lang'translate.tar' toc.csv
-	tar -r -f $lang'translate.tar' "$pg" 
-	gzip $lang'translate.tar' 
+	tar -r -f $lang'translate.tar' "$pg"
+	gzip $lang'translate.tar'
 	#}}}
 
 elif [ "$1" = d ] ; then
@@ -238,12 +212,12 @@ HELP
 	filen=$page
 	if ! tar -tvzf $lang'translate.tar.gz' |grep -q "$page" ;then
 		ext="${page##*.}"
-		test ext = htm && ext=txt || ext=htm 
+		test ext = htm && ext=txt || ext=htm
 		filen="${page%.*}.a.$ext"
 	fi
 
 	test "$1"  = e && (temp=`cat "$3"`;getelinks "$filen" >"$3"; echo "$temp" >> "$3")
-	
+
 	gzip -df $lang'translate.tar.gz'
 	tar --delete -f $lang'translate.tar' "$filen" #$page
 	tar -u -f $lang'translate.tar' "$3" #$page
@@ -264,7 +238,7 @@ HELP
 	if [[ ! -d dic ]];then mkdir dic; fi
 	if [[ ! "$cnt" =~ 'There is no page' ]]; then
 		page=`echo "$cnt"|awk '/PAGEVAR/{next}{print;exit 1}'`
-		filen=${page%.*}.txt	
+		filen=${page%.*}.txt
 		echo "$cnt"| sed -e '/^PAGEVAR$/,/^PAGEVAR$/d'|tee $page.txt|tee $filen
 		echo -----|tee -a $filen
 		se=$2
@@ -287,14 +261,14 @@ HELP
 		echo "$cnt"|tee -a "$filen"
 		echo -----|tee -a "$filen"
 	fi
-	trans :ru+en "$2" |tee -a $filen 
-	
+	trans :ru+en "$2" |tee -a $filen
+
 	tar -xzOf $lang'translate.tar.gz' toc.csv | \
 	awk -v se="$se" -v pg="$filen" -v wo="$2" -v new="$new" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
       if(ins==0 && new==0 && $2 == se || new==1 && ins==0 && $2 ~ se){
 				if(new==1) print;
-			 	print "\"" wo "\",\"" pg "\""; ins=1; 
+			 	print "\"" wo "\",\"" pg "\""; ins=1;
 			}
 			else
 				print;
@@ -314,13 +288,13 @@ elif [ "$1" = diff ]; then
 HELP
 #}}}
 	#debugging=1
-	#toc=`tar -xzOf $lang'translate.tar.gz' toc.csv| 
+	#toc=`tar -xzOf $lang'translate.tar.gz' toc.csv|
 			#awk 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
     #{print $3 }'`
 	declare -A TOC LIST
 	while read -r line; do
 		TOC[$line]=1
-	done <<<`tar -xzOf $lang'translate.tar.gz' toc.csv| 
+	done <<<`tar -xzOf $lang'translate.tar.gz' toc.csv|
 			awk 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
     {print $3 }'`
 	echo TOC:${#TOC[@]}:
@@ -333,28 +307,28 @@ HELP
 
 	if [[ ${#TOC[@]} -lt ${#LIST[@]} ]];then
 		for line in ${!LIST[@]};do
-			if [[ ! ${TOC[$line]} ]]; then 
+			if [[ ! ${TOC[$line]} ]]; then
 				echo
 				echo There is no index for the page: $line
 			else
 				if [[ $diff -eq 1000 ]];then
 					echo -n .
 					diff=0
-					#debug $line 
+					#debug $line
 				fi
 				(( diff++  ))
 			fi
 		done
 	else
 		for line in ${!TOC[@]};do
-			if [[ ! ${LIST[$line]} ]]; then 
+			if [[ ! ${LIST[$line]} ]]; then
 				echo
 				echo There is no page for index search: $line
 			else
 				if [[ $diff -eq 1000 ]];then
 					echo -n .
 					diff=0
-					#debug $line 
+					#debug $line
 				fi
 				(( diff++  ))
 			fi
@@ -363,13 +337,13 @@ HELP
 	#while read -r line; do
 		##echo "$toc" | grep	-q "$line"
 		##grep  -q "$line" <<< "$toc"
-		#if [[ ! ${TOC[$line]} ]]; then 
+		#if [[ ! ${TOC[$line]} ]]; then
 			#echo $line
 		#else
 			#if [[ $diff -eq 1000 ]];then
 				#echo -n .
 				#diff=0
-				##debug $line 
+				##debug $line
 			#fi
 			#(( diff++  ))
 		#fi
