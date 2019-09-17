@@ -57,7 +57,7 @@ pageout(){
 thesaurus(){
 #{{{
 	cmd='curl -s -c /tmp/lynxcookies'
-	apikey=`awk -F= '/thesaurus.altervista.org/{print $2}' .config` #'GawlDkBnfT0aQ7MTBWXq'
+	apikey=`awk -F= '/thesaurus.altervista.org/{print $2}' .config` #
 	word=`echo "$2" |urlencode`
 	language='en_US'
 	url='http://thesaurus.altervista.org/thesaurus/v1?word='$word'&language='$language'&key='$apikey'&output=xml'
