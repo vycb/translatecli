@@ -57,7 +57,7 @@ pageout(){
 thesaurus(){
 #{{{
 	cmd='curl -s -c /tmp/lynxcookies'
-	apikey='GawlDkBnfT0aQ7MTBWXq'
+	apikey=`awk -F= '/thesaurus.altervista.org/{print $2}' .config` #'GawlDkBnfT0aQ7MTBWXq'
 	word=`echo "$2" |urlencode`
 	language='en_US'
 	url='http://thesaurus.altervista.org/thesaurus/v1?word='$word'&language='$language'&key='$apikey'&output=xml'
@@ -68,7 +68,7 @@ awk -v se="$2" -f getXML.awk -f thesaurusaltervista.awk
 } #}}}
 
 [[ $0 =~ 'enru' ]] &&	lang='enru' || lang='ruen'
-#echo $lang
+# echo $lang
 cd $home #> /dev/null 2>&1
 
 if [[ $# -eq 1 ]] && [ "$1" != b ] && [ "$1" != diff ]; then

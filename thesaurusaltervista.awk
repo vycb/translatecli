@@ -23,6 +23,6 @@ BEGIN {out="";OFS = " ";
  }
  END{
  	if(!out) exit 1;
- 	print "thesaurus.altervista.org:\n","\033[1;38m" se":\n\033[00m", out
+ 	print "\033[1;38m" se":\n\033[00m", out
 }
  

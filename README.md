@@ -1,4 +1,4 @@
-# translatecli 
+# translatecli  
 
 Bash based off-line dictionary for translation English-Russian and Russian-English in Linux terminal.  
 English-Russian - 48523 words  
