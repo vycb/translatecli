@@ -14,11 +14,11 @@ fi
 home=${TRANSLATECLI_HOME:="$HOME/.vim/doc/englishtranslate"}
 
 urlencode(){
-	awk 'BEGIN {while (y++ < 125) zword[sprintf("%c", y)] = y}
+	awk 'BEGIN {while (y++ < 125) zword[sprintf("%c", y)] = y} #{{{
 	{while (y = substr($0, ++j, 1))
 		q = y ~ /[A-Za-z0-9_.!~*\47()-]/ ? q y : q sprintf("%%%02X", zword[y])
 		print q}'
-}
+} #}}}
 
 getpage(){
 	#tar -xjOf $lang'translate.tar.bz2' toc.csv | \#{{{#{{{
@@ -67,14 +67,14 @@ thesaurus(){
 awk -v se="$2" -f getXML.awk -f thesaurusaltervista.awk
 } #}}}
 
-[[ $0 =~ 'enru' ]] &&	lang='enru' || lang='ruen'
+[[ $0 =~ enru* ]] &&	lang='enru' || lang='ruen'
 # echo $lang
 cd $home #> /dev/null 2>&1
 
 if [[ $# -eq 1 ]] && [ "$1" != b ] && [ "$1" != diff ]; then
 #{{{#{{{
 :<<HELP
- pattern - to search dictionary. Example: enrutranslate.sh peace
+ pattern - to search in dictionary. Example: enrutranslate.sh peace
 HELP
 #}}}
     #debug :$1:$2:$#:
@@ -117,16 +117,36 @@ HELP
 		fi
 	done #}}}
 
-elif [ "$1" = t ]; then
-	thesaurus "$1" "$2" "$3"
-
-elif [ "$1"  = p ]; then
-#{{{
+elif [ "$1" = tr ]; then
+#{{{{{{
 :<<HELP
- p - get read a page in dictionary. Example: enrutranslate.sh p "look up"
+ tr - transliterate the word. Example: enrutranslate.sh tr "look up"
 HELP
 #}}}
-	pageout "$1" "$2" "$3" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d'
+case $lang in
+	enru)
+	sed 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/'<<<"$2"|sed 's/[ьъ]//g; s/ё/yo/g; s/ц/ts/g; s/ч/ch/g; s/ш/sh/g; s/щ/sh/g; s/ю/yu/g; s/я/ya/'
+	;;
+	ruen)
+		sed 'y/abvgdjzijklmnoprstufhyee/абвгджзийклмнопрстуфхыэе/'<<<"$2"sed 's/yo/ё/g; s/ts/ц/g; s/ch/ч/g; s/sh/ш/g; s/sh/щ/g; s/yu/ю/g; s/ya/я/'
+		;;
+esac #}}}
+
+elif [ "$1" = t ]; then
+#{{{{{{
+:<<HELP
+ t - search the word in thesaurus. Example: enrutranslate.sh t "look up"
+HELP
+#}}}
+	thesaurus "$1" "$2" "$3" #}}}
+
+elif [ "$1"  = p ]; then
+#{{{{{{
+:<<HELP
+ p - read a page from dictionary. Example: enrutranslate.sh p "look up"
+HELP
+#}}}
+	pageout "$1" "$2" "$3" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
 
 elif [ "$1" = a ]; then
 #{{{#{{{
@@ -244,7 +264,7 @@ HELP
 		se=$2
 		new=0
 	else
-		# This is new page, then add add as 'a' mode
+		# This is new page, then add as 'a' mode
 		filen=${2// /-}
 		filen="dic/$filen.txt"
 		#filen=dic/${filen,,}.txt
