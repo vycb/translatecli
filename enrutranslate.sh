@@ -86,7 +86,9 @@ HELP
       if( $2 ~ se ) print $2;
     }' #}}}
 
-elif [ "$1" = g ]; then
+else
+	case $1 in
+		g)
 #{{{#{{{
 :<<HELP
  g- grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
@@ -95,7 +97,8 @@ HELP
 	tar -xzOf $lang'translate.tar.gz' toc.csv |grep -i "$2"
 	tar -tvzf $lang'translate.tar.gz' |grep -i "$2"
 #}}}
-elif [ "$1" = ts ]; then
+		;;
+		ts)
 #{{{#{{{
 :<<HELP
  ts - full text search in dictionary. Example: enrutranslate.sh ts look
@@ -116,8 +119,8 @@ HELP
 			echo "$out"
 		fi
 	done #}}}
-
-elif [ "$1" = tr ]; then
+		;;
+		tr)
 #{{{{{{
 :<<HELP
  tr - transliterate the word. Example: enrutranslate.sh tr "look up"
@@ -131,24 +134,26 @@ case $lang in
 		sed 'y/abvgdjzijklmnoprstufhyee/абвгджзийклмнопрстуфхыэе/'<<<"$2"sed 's/yo/ё/g; s/ts/ц/g; s/ch/ч/g; s/sh/ш/g; s/sh/щ/g; s/yu/ю/g; s/ya/я/'
 		;;
 esac #}}}
-
-elif [ "$1" = t ]; then
+		;;
+		t)
 #{{{{{{
 :<<HELP
  t - search the word in thesaurus. Example: enrutranslate.sh t "look up"
 HELP
 #}}}
 	thesaurus "$1" "$2" "$3" #}}}
+		;;
 
-elif [ "$1"  = p ]; then
+		p)
 #{{{{{{
 :<<HELP
  p - read a page from dictionary. Example: enrutranslate.sh p "look up"
 HELP
 #}}}
 	pageout "$1" "$2" "$3" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
+		;;
 
-elif [ "$1" = a ]; then
+		a)
 #{{{#{{{
 :<<HELP
  a - add a new page to dictionary.
@@ -179,8 +184,9 @@ HELP
 	tar -r -f $lang'translate.tar' "$pg"
 	gzip $lang'translate.tar'
 	#}}}
+		;;
 
-elif [ "$1" = d ] ; then
+		d)
 #{{{#{{{
 :<<HELP
  d - delete a page from dictionary. Example: enrutranslate.sh d "look up" dic/lookup.txt
@@ -210,8 +216,9 @@ HELP
 	tar -u -f $lang'translate.tar' toc.csv
 	gzip $lang'translate.tar'
 #}}}
+		;;
 
-elif [ "$1" = e ] || [ "$1"  = r ]; then
+		e|r)
 #{{{#{{{
 :<<HELP
  r - replace a content from 'dic' directory.
@@ -245,8 +252,9 @@ HELP
 	tar -u -f $lang'translate.tar' toc.csv
 	gzip $lang'translate.tar'
 #}}}
+		;;
 
-elif [ "$1" = l ]; then
+		l)
 #{{{#{{{
 :<<HELP
  l - 'look up' mod - get new page by 'trans' app and add to content in dictionary.
@@ -300,8 +308,9 @@ HELP
 	tar -u -f $lang'translate.tar' toc.csv
 	gzip $lang'translate.tar'
 #}}}
+		;;
 
-elif [ "$1" = diff ]; then
+		diff)
 #{{{#{{{
 :<<HELP
  diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff
@@ -372,8 +381,9 @@ HELP
 	#echo
 	#echo list:$list:
 #}}}
+		;;
 
-elif [ "$1" = b ]; then
+		b)
 #{{{#{{{
 :<<HELP
  b - make a backup of dictionary. Example: enrutranslate.sh b
@@ -382,7 +392,8 @@ HELP
 	suf=`date +"%Y%m%d%H%M%S"`
 	cp -f $lang'translate.tar.gz' $lang'translate-'$suf'.tar.gz'
 #}}}
-
+		;;
+	esac
 fi
 cd - > /dev/null 2>&1
 
