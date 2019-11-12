@@ -120,20 +120,29 @@ HELP
 		fi
 	done #}}}
 		;;
-		tr)
+	tl)
 #{{{{{{
 :<<HELP
- tr - transliterate the word. Example: enrutranslate.sh tr "look up"
+ tl - transliterate the word. Example: enrutranslate.sh tl "look up"
 HELP
 #}}}
-case $lang in
-	enru)
-	sed 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/'<<<"$2"|sed 's/[ьъ]//g; s/ё/yo/g; s/ц/ts/g; s/ч/ch/g; s/ш/sh/g; s/щ/sh/g; s/ю/yu/g; s/я/ya/'
+	case $lang in
+		enru)
+			sed 'y/abvgdjzijklmnoprstufhyee/абвгджзийклмнопрстуфхыэе/'<<< "$2"|sed 's/yo/ё/g; s/ts/ц/g; s/ch/ч/g; s/sh/ш/g; s/sh/щ/g; s/yu/ю/g; s/ya/я/'
+			;;
+		ruen)
+			sed 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/'<<< "$2"|sed 's/[ьъ]//g; s/ё/yo/g; s/ц/ts/g; s/ч/ch/g; s/ш/sh/g; s/щ/sh/g; s/ю/yu/g; s/я/ya/'
+			;;
+	esac #}}}
 	;;
-	ruen)
-		sed 'y/abvgdjzijklmnoprstufhyee/абвгджзийклмнопрстуфхыэе/'<<<"$2"sed 's/yo/ё/g; s/ts/ц/g; s/ch/ч/g; s/sh/ш/g; s/sh/щ/g; s/yu/ю/g; s/ya/я/'
-		;;
-esac #}}}
+	tr|to|tro)
+#{{{{{{
+:<<HELP
+ tr/to -translate online with trans :ru+en. Example: enrutranslate.sh tr "look up"
+ /tro
+HELP
+#}}}
+		trans :ru+en "$2" #}}}
 		;;
 		t)
 #{{{{{{
@@ -150,7 +159,7 @@ HELP
  p - read a page from dictionary. Example: enrutranslate.sh p "look up"
 HELP
 #}}}
-	pageout "$1" "$2" "$3" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
+		pageout "$1" "$2" "$3" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
 		;;
 
 		a)
@@ -257,7 +266,7 @@ HELP
 		l)
 #{{{#{{{
 :<<HELP
- l - 'look up' mod - get new page by 'trans' app and add to content in dictionary.
+ l - 'look up', get online translations by 'trans' app and add the new page to dictionary.
      Example: enrutranslate.sh l peace
     'trans' (https://github.com/soimort/translate-shell) must be installed for this mod.
 HELP
@@ -285,7 +294,7 @@ HELP
 		new=1
 	fi
 	cnt=`thesaurus "$1" "$2" "$3"`
-	if [ -n "$cnt" ]; then
+	if ! grep -q 'unexpected close tag'<<<"$cnt" && [ -n "$cnt" ]; then
 		echo "$cnt"|tee -a "$filen"
 		echo -----|tee -a "$filen"
 	fi
