@@ -15,7 +15,7 @@ transkripcia
  
 ## Usage:  
 #### to search  
-$ enrutranslate.sh script  
+$ enrutranslate.sh s script  
 prescriptive  
 proscription  
 rescript  
@@ -29,7 +29,7 @@ scriptoria
 scriptorium  
 scriptural  
 #### Read page  
-$ enrutranslate.sh p script  
+$ enrutranslate.sh p script , or without p  
    << scrip << script >> scriptoria >>  
   
    [skrɪpt]  

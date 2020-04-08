@@ -1,17 +1,17 @@
 #! /bin/bash -
 #. /home/bin/bashruntime.sh
 
-if [ $# -eq 0 -o  "$1" = 'h' -o  "$1" = '-h'  -o "$1" = '--help' ]
-then
-	#awk '/HELP$/{H=1;}; /^HELP$/{H=0}; !/HELP$|^HELP$/{if(H){print}}' "$0"
+if [ $# -eq 0 -o  "$1" = 'h' -o  "$1" = '-h'  -o "$1" = '--help' ];then
+	#awk '/HELP$/{H=1;}; /^HELP$/{H=0}; !/HELP$|^HELP$/{if(H){print}}' "$0" #{{{
   sed -n '/^:<<HELP$/,/^HELP$/{/HELP$/d; p}' "$0"  #/HELP$/d
  	exit 0;
 :<<HELP
 Usage:
 HELP
 	exit 0
-fi
-home=${TRANSLATECLI_HOME:="$HOME/.vim/doc/englishtranslate"}
+fi #}}}
+
+: ${TRANSLATECLI_HOME:="$HOME/.vim/doc/englishtranslate"}
 
 urlencode(){
 	awk 'BEGIN {while (y++ < 125) zword[sprintf("%c", y)] = y} #{{{
@@ -68,27 +68,33 @@ awk -v se="$2" -f getXML.awk -f thesaurusaltervista.awk
 } #}}}
 
 [[ $0 =~ enru* ]] &&	lang='enru' || lang='ruen'
-# echo $lang
-cd $home #> /dev/null 2>&1
+#  echo $lang arglen:$#
+cd $TRANSLATECLI_HOME #> /dev/null 2>&1
 
 if [[ $# -eq 1 ]] && [ "$1" != b ] && [ "$1" != diff ]; then
+	mode=p #{{{
+else
+	mode=$1
+fi  #}}}
+
+case $mode in
+	s|se)
 #{{{#{{{
 :<<HELP
- pattern - to search in dictionary. Example: enrutranslate.sh peace
+ s/se - to search in dictionary. Example: enrutranslate.sh s peace
 HELP
 #}}}
     #debug :$1:$2:$#:
     #unzip -c $lang'translate.zip' toc.csv | \#{{{
     #tar -xjOf $lang'translate.tar.bz2' toc.csv | \#}}}
     tar -xzOf $lang'translate.tar.gz' toc.csv | \
-			awk -v se="$1" 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
+			awk -v se="$2" 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
     {
       if( $2 ~ se ) print $2;
-    }' #}}}
+    }'
+			;; #}}}
 
-else
-	case $1 in
-		g)
+	g)
 #{{{#{{{
 :<<HELP
  g- grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
@@ -98,7 +104,8 @@ HELP
 	tar -tvzf $lang'translate.tar.gz' |grep -i "$2"
 #}}}
 		;;
-		ts)
+
+	ts)
 #{{{#{{{
 :<<HELP
  ts - full text search in dictionary. Example: enrutranslate.sh ts look
@@ -120,6 +127,7 @@ HELP
 		fi
 	done #}}}
 		;;
+
 	tl)
 #{{{{{{
 :<<HELP
@@ -135,6 +143,7 @@ HELP
 			;;
 	esac #}}}
 	;;
+
 	tr|to|tro)
 #{{{{{{
 :<<HELP
@@ -144,7 +153,8 @@ HELP
 #}}}
 		trans :ru+en "$2" #}}}
 		;;
-		t)
+
+	t)
 #{{{{{{
 :<<HELP
  t - search the word in thesaurus. Example: enrutranslate.sh t "look up"
@@ -153,16 +163,7 @@ HELP
 	thesaurus "$1" "$2" "$3" #}}}
 		;;
 
-		p)
-#{{{{{{
-:<<HELP
- p - read a page from dictionary. Example: enrutranslate.sh p "look up"
-HELP
-#}}}
-		pageout "$1" "$2" "$3" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
-		;;
-
-		a)
+	a)
 #{{{#{{{
 :<<HELP
  a - add a new page to dictionary.
@@ -195,7 +196,7 @@ HELP
 	#}}}
 		;;
 
-		d)
+	d)
 #{{{#{{{
 :<<HELP
  d - delete a page from dictionary. Example: enrutranslate.sh d "look up" dic/lookup.txt
@@ -227,7 +228,7 @@ HELP
 #}}}
 		;;
 
-		e|r)
+	e|r)
 #{{{#{{{
 :<<HELP
  r - replace a content from 'dic' directory.
@@ -263,7 +264,7 @@ HELP
 #}}}
 		;;
 
-		l)
+	l)
 #{{{#{{{
 :<<HELP
  l - 'look up', get online translations by 'trans' app and add the new page to dictionary.
@@ -319,7 +320,7 @@ HELP
 #}}}
 		;;
 
-		diff)
+	diff)
 #{{{#{{{
 :<<HELP
  diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff
@@ -392,7 +393,7 @@ HELP
 #}}}
 		;;
 
-		b)
+	b)
 #{{{#{{{
 :<<HELP
  b - make a backup of dictionary. Example: enrutranslate.sh b
@@ -402,8 +403,19 @@ HELP
 	cp -f $lang'translate.tar.gz' $lang'translate-'$suf'.tar.gz'
 #}}}
 		;;
-	esac
-fi
+
+	p|*)
+#{{{{{{
+:<<HELP
+ p - read a page from dictionary. Example: enrutranslate.sh p "look up"
+HELP
+#}}}
+		if [[ $1 = p ]];then shift; fi
+		pageout "$mode" "$1" "$2" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
+		;;
+
+esac
+
 cd - > /dev/null 2>&1
 
 # vim: ts=2 sw=2 noet foldmethod=marker :
