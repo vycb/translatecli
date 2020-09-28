@@ -29,7 +29,7 @@ scriptoria
 scriptorium  
 scriptural  
 #### Read page  
-$ enrutranslate.sh p script , or without p  
+$ enrutranslate.sh p script , or without p, as default operation  
    << scrip << script >> scriptoria >>  
   
    [skrɪpt]  

@@ -136,10 +136,10 @@ HELP
 #}}}
 	case $lang in
 		enru)
-			sed 'y/abvgdjzijklmnoprstufhyee/абвгджзийклмнопрстуфхыэе/'<<< "$2"|sed 's/yo/ё/g; s/ts/ц/g; s/ch/ч/g; s/sh/ш/g; s/sh/щ/g; s/yu/ю/g; s/ya/я/'
+			sed -e 'y/abvgdjzijklmnoprstufhyee/абвгджзийклмнопрстуфхыэе/' -e 'y/ABVGDJZIJKLMNOPRSTUFHYEE/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/' -e 's/yo/ё/gi; s/ts/ц/gi; s/ch/ч/gi; s/sh/ш/gi; s/sh/щ/gi; s/yu/ю/gi; s/ya/я/gi' <<< "$2"
 			;;
 		ruen)
-			sed 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/'<<< "$2"|sed 's/[ьъ]//g; s/ё/yo/g; s/ц/ts/g; s/ч/ch/g; s/ш/sh/g; s/щ/sh/g; s/ю/yu/g; s/я/ya/'
+			sed -e 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/' -e 'y/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/ABVGDJZIJKLMNOPRSTUFHYEE/' -e 's/[ьъ]//gi; s/ё/yo/gi; s/ц/ts/gi; s/ч/ch/gi; s/ш/sh/gi; s/щ/sh/gi; s/ю/yu/g; s/я/ya/gi'<<< "$2"
 			;;
 	esac #}}}
 	;;
@@ -154,10 +154,10 @@ HELP
 		trans :ru+en "$2" #}}}
 		;;
 
-	t)
+	t|te)
 #{{{{{{
 :<<HELP
- t - search the word in thesaurus. Example: enrutranslate.sh t "look up"
+ t/te - search the word in thesaurus. Example: enrutranslate.sh t "look up"
 HELP
 #}}}
 	thesaurus "$1" "$2" "$3" #}}}

@@ -1,17 +1,17 @@
 #!/usr/bin/awk -f
 
- #BEGIN {
-      #while ( getXML(ARGV[1],0) ) {
-          #print XTYPE, XITEM;
-          ##print "XTYPE:" XTYPE, "XITEM:" XITEM;
-          #for (attrName in XATTR)
-              #print "\t" attrName "=" XATTR[attrName];
-      #}
-      #if (XERROR) {
-          #print XERROR;
-          #exit 1;
-      #}
- #}
+#  BEGIN {
+#       while ( getXML(ARGV[1],0) ) {
+#           print XTYPE, XITEM;
+#           #print "XTYPE:" XTYPE, "XITEM:" XITEM;
+#           for (attrName in XATTR)
+#               print "\t" attrName "=" XATTR[attrName];
+#       }
+#       if (XERROR) {
+#           print XERROR;
+#           exit 1;
+#       }
+#  }
 
 ##
 # getXML( file, skipData ): # read next xml-data into XTYPE,XITEM,XATTR
