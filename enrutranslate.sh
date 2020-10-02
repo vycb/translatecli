@@ -154,10 +154,10 @@ HELP
 		trans :ru+en "$2" #}}}
 		;;
 
-	t|te)
+	th|the)
 #{{{{{{
 :<<HELP
- t/te - search the word in thesaurus. Example: enrutranslate.sh t "look up"
+ th/the - search the word in thesaurus. Example: enrutranslate.sh t "look up"
 HELP
 #}}}
 	thesaurus "$1" "$2" "$3" #}}}
