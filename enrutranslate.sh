@@ -6,7 +6,7 @@ if [ $# -eq 0 -o  "$1" = 'h' -o  "$1" = '-h'  -o "$1" = '--help' ];then
   sed -n '/^:<<HELP$/,/^HELP$/{/HELP$/d; p}' "$0"  #/HELP$/d
  	exit 0;
 :<<HELP
-Usage:
+Usage: enrutranslate.sh dictionary - to translate a word
 HELP
 	exit 0
 fi #}}}
@@ -81,7 +81,7 @@ case $mode in
 	s|se)
 #{{{#{{{
 :<<HELP
- s/se - to search in dictionary. Example: enrutranslate.sh s peace
+s/se - to search in dictionary. Example: enrutranslate.sh s peace
 HELP
 #}}}
     #debug :$1:$2:$#:
@@ -97,7 +97,7 @@ HELP
 	g)
 #{{{#{{{
 :<<HELP
- g- grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
+g - grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
 HELP
 #}}}
 	tar -xzOf $lang'translate.tar.gz' toc.csv |grep -i "$2"
@@ -108,7 +108,7 @@ HELP
 	ts)
 #{{{#{{{
 :<<HELP
- ts - full text search in dictionary. Example: enrutranslate.sh ts look
+ts - full text search in dictionary. Example: enrutranslate.sh ts look
 HELP
 #}}}
 	for file in `tar -tvzf $lang'translate.tar.gz'|awk '{print $6}'`;do
@@ -131,7 +131,7 @@ HELP
 	tl)
 #{{{{{{
 :<<HELP
- tl - transliterate the word. Example: enrutranslate.sh tl "look up"
+tl - transliterate the word. Example: enrutranslate.sh tl "look up"
 HELP
 #}}}
 	case $lang in
@@ -144,20 +144,19 @@ HELP
 	esac #}}}
 	;;
 
-	tr|to|tro)
+	tr*)
 #{{{{{{
 :<<HELP
- tr/to -translate online with trans :ru+en. Example: enrutranslate.sh tr "look up"
- /tro
+tr/tro -translate online with trans :ru+en. Example: enrutranslate.sh tr "look up"
 HELP
 #}}}
 		trans :ru+en "$2" #}}}
 		;;
 
-	th|the)
+	th*)
 #{{{{{{
 :<<HELP
- th/the - search the word in thesaurus. Example: enrutranslate.sh t "look up"
+th/the - search the word in thesaurus. Example: enrutranslate.sh t "look up"
 HELP
 #}}}
 	thesaurus "$1" "$2" "$3" #}}}
@@ -166,13 +165,13 @@ HELP
 	a)
 #{{{#{{{
 :<<HELP
- a - add a new page to dictionary.
-     Example: enrutranslate.sh a "look up" "look towards" dic/lookup.txt
-		 Where 3-d argument (optional) is an 'append after' index, ie append after "look towards".
+a - add a new page to dictionary.
+    Example: enrutranslate.sh a "look up" "look towards" dic/lookup.txt
+    Where 3-d argument (optional) is an 'append after' index, ie append after "look towards".
 HELP
 #}}}
-	#tar -xjOf $lang'translate.tar.bz2' toc.csv | \#{{{
-	#unzip -c $lang'translate.zip' toc.csv | \#}}}
+#tar -xjOf $lang'translate.tar.bz2' toc.csv | \#{{{
+#unzip -c $lang'translate.zip' toc.csv | \#}}}
 	if [[ $# -lt 4 ]]; then
       #let ln=${#2}-3
       se=${2:0:3}
@@ -199,8 +198,8 @@ HELP
 	d)
 #{{{#{{{
 :<<HELP
- d - delete a page from dictionary. Example: enrutranslate.sh d "look up" dic/lookup.txt
-     A 3-d argument is optional, it's need in case if there is no entry in index file toc.csv
+d - delete a page from dictionary. Example: enrutranslate.sh d "look up" dic/lookup.txt
+    A 3-d argument is optional, it's need in case if there is no entry in index file toc.csv
 HELP
 #}}}
  	page=$(getpage "$2")
@@ -231,10 +230,10 @@ HELP
 	e|r)
 #{{{#{{{
 :<<HELP
- r - replace a content from 'dic' directory.
-     Example: enrutranslate.sh r "look up" dic/lookup.txt
- e - same as 'r' replace, but add a content from file in 'dic' to content in dictionary.
-     Example: enrutranslate.sh e "look up" dic/lookup.txt
+r - replace a content from 'dic' directory.
+    Example: enrutranslate.sh r "look up" dic/lookup.txt
+e - same as 'r' replace, but add a content from file in 'dic' to content in dictionary.
+    Example: enrutranslate.sh e "look up" dic/lookup.txt
 HELP
 #}}}
 	page=$(getpage "$2")
@@ -267,9 +266,9 @@ HELP
 	l)
 #{{{#{{{
 :<<HELP
- l - 'look up', get online translations by 'trans' app and add the new page to dictionary.
-     Example: enrutranslate.sh l peace
-    'trans' (https://github.com/soimort/translate-shell) must be installed for this mod.
+l - 'look up', get online translations by 'trans' app and add the new page to dictionary.
+    Example: enrutranslate.sh l peace
+   'trans' (https://github.com/soimort/translate-shell) must be installed for this mode
 HELP
 #}}}
 	cnt=$(pageout "$1" "$2" "$3")
@@ -323,7 +322,7 @@ HELP
 	diff)
 #{{{#{{{
 :<<HELP
- diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff
+diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff
 HELP
 #}}}
 	#debugging=1
@@ -396,7 +395,7 @@ HELP
 	b)
 #{{{#{{{
 :<<HELP
- b - make a backup of dictionary. Example: enrutranslate.sh b
+b - make a backup of dictionary. Example: enrutranslate.sh b
 HELP
 #}}}
 	suf=`date +"%Y%m%d%H%M%S"`
@@ -407,7 +406,8 @@ HELP
 	p|*)
 #{{{{{{
 :<<HELP
- p - read a page from dictionary. Example: enrutranslate.sh p "look up"
+p - read a page from dictionary. Example: enrutranslate.sh p "look up", p - may be skiped
+    just enrutranslate.sh "look up"
 HELP
 #}}}
 		if [[ $1 = p ]];then shift; fi
