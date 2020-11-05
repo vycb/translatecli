@@ -3,7 +3,7 @@
 
 if [ $# -eq 0 -o  "$1" = 'h' -o  "$1" = '-h'  -o "$1" = '--help' ];then
 	#awk '/HELP$/{H=1;}; /^HELP$/{H=0}; !/HELP$|^HELP$/{if(H){print}}' "$0" #{{{
-  sed -n '/^:<<HELP$/,/^HELP$/{/HELP$/d; p}' "$0"  #/HELP$/d
+  sed -n '/^:<<HELP$/,/^HELP$/{//!p}' "$0"  #/HELP$/d
  	exit 0;
 :<<HELP
 Usage: enrutranslate.sh dictionary - to translate a word
@@ -29,10 +29,9 @@ getpage(){
 			#tmp=match($2, se)
       #if( tmp )
       if($2 == se)
-				{ print $3; exit 1;}
+				{ print $3; exit 0;}
 		}'
-}
-#}}}
+} #}}}
 
 getelinks(){
 #{{{
@@ -71,7 +70,7 @@ awk -v se="$2" -f getXML.awk -f thesaurusaltervista.awk
 #  echo $lang arglen:$#
 cd $TRANSLATECLI_HOME #> /dev/null 2>&1
 
-if [[ $# -eq 1 ]] && [ "$1" != b ] && [ "$1" != diff ]; then
+if [[ $# -eq 1 ]] && [ "$1" != b ] &&  [ "$1" != diff ] && [ "$1" != cd ]; then
 	mode=p #{{{
 else
 	mode=$1
@@ -182,7 +181,7 @@ HELP
   fi
 	gzip -df $lang'translate.tar.gz'
 	tar -xOf $lang'translate.tar' toc.csv | \
-	awk -v se="^$se" -v wo="$2" -v pg="$pg" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
+	awk -v se="^$se" -v wo="$2" -v pg="$pg" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE=0; ins=0}
     {
 			print
       if(ins==0 && $2 ~ se ){ print "\"" wo "\",\"" pg "\""; ins=1; }
@@ -274,14 +273,14 @@ HELP
 	cnt=$(pageout "$1" "$2" "$3")
 	if [[ ! -d dic ]];then mkdir dic; fi
 	if [[ ! "$cnt" =~ 'There is no page' ]]; then
-		page=`echo "$cnt"|awk '/PAGEVAR/{next}{print;exit 1}'`
+		page=$(echo "$cnt"|awk '/PAGEVAR/{next}{print;exit 1}')
 		filen=${page%.*}.txt
 		echo "$cnt"| sed -e '/^PAGEVAR$/,/^PAGEVAR$/d'|tee $page.txt|tee $filen
 		echo -----|tee -a $filen
 		se=$2
 		new=0
 	else
-		# This is new page, then add as 'a' mode
+		# This is a new page, then add same as add mode
 		filen=${2// /-}
 		filen="dic/$filen.txt"
 		#filen=dic/${filen,,}.txt
@@ -293,7 +292,7 @@ HELP
 		fi
 		new=1
 	fi
-	cnt=`thesaurus "$1" "$2" "$3"`
+	cnt=$(thesaurus "$1" "$2" "$3")
 	if ! grep -q 'unexpected close tag'<<<"$cnt" && [ -n "$cnt" ]; then
 		echo "$cnt"|tee -a "$filen"
 		echo -----|tee -a "$filen"
@@ -403,6 +402,17 @@ HELP
 #}}}
 		;;
 
+	cd)
+#{{{{{{
+:<<HELP
+cd - change path to a dictionary directory. Example: . enrutranslate.sh cd
+     Notice a dot befor the command
+HELP
+#}}}
+		cd $TRANSLATECLI_HOME
+		#}}}
+		;;
+
 	p|*)
 #{{{{{{
 :<<HELP
@@ -413,6 +423,7 @@ HELP
 		if [[ $1 = p ]];then shift; fi
 		pageout "$mode" "$1" "$2" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
 		;;
+
 
 esac
 
