@@ -56,14 +56,14 @@ pageout(){
 thesaurus(){
 #{{{
 	cmd='curl -s -c /tmp/lynxcookies'
-	apikey=`awk -F= '/thesaurus.altervista.org/{print $2}' .config` #
+	apikey=`awk -F= '/thesaurus.altervista.org/{print substr($0,index($0,"=")+1)}' .config` #
 	word=`echo "$2" |urlencode`
 	language='en_US'
 	url='http://thesaurus.altervista.org/thesaurus/v1?word='$word'&language='$language'&key='$apikey'&output=xml'
 	#echo $url
-	echo `${cmd} -A 'Mozilla/5.0 (Android; Mobile; rv:62.0) Gecko/62.0 Firefox/62.0' -L -b "PHPSESSID=3c5a1ce42e0bddbb62bbdd0608e3cc97;__cfduid=df62b33881797a9df54020dfc579c21d11539243258" $url`|\
-		#cat tezauras.xml|
-awk -v se="$2" -f getXML.awk -f thesaurusaltervista.awk
+	#cat tezauras.xml|
+	echo $($cmd -A 'Mozilla/5.0 (X11; CrOS x86_64 19999.999) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.9999 Safari/537.36' -L -b "Accept-Encoding=gzip,deflate;Host=thesaurus.altervista.org;__cfduid=df62b33881797a9df54020dfc579c21d11539243258;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" $url)|\
+	awk -v se="$2" -f getXML.awk -f thesaurusaltervista.awk
 } #}}}
 
 [[ $0 =~ enru* ]] &&	lang='enru' || lang='ruen'
@@ -93,10 +93,10 @@ HELP
     }'
 			;; #}}}
 
-	g)
+	g|gr)
 #{{{#{{{
 :<<HELP
-g - grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
+g/gr - grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
 HELP
 #}}}
 	tar -xzOf $lang'translate.tar.gz' toc.csv |grep -i "$2"
@@ -135,7 +135,7 @@ HELP
 #}}}
 	case $lang in
 		enru)
-			sed -e 'y/abvgdjzijklmnoprstufhyee/абвгджзийклмнопрстуфхыэе/' -e 'y/ABVGDJZIJKLMNOPRSTUFHYEE/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/' -e 's/yo/ё/gi; s/ts/ц/gi; s/ch/ч/gi; s/sh/ш/gi; s/sh/щ/gi; s/yu/ю/gi; s/ya/я/gi' <<< "$2"
+			sed -e 'y/abvgdjzijcklmnoprstufhyee/абвгджзийкклмнопрстуфхыэе/' -e 'y/ABVGDJZIJKLMNOPRSTUFHYEE/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/' -e 's/yo/ё/gi; s/ts/ц/gi; s/ch/ч/gi; s/sh/ш/gi; s/sh/щ/gi; s/yu/ю/gi; s/ya/я/gi' <<< "$2"
 			;;
 		ruen)
 			sed -e 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/' -e 'y/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/ABVGDJZIJKLMNOPRSTUFHYEE/' -e 's/[ьъ]//gi; s/ё/yo/gi; s/ц/ts/gi; s/ч/ch/gi; s/ш/sh/gi; s/щ/sh/gi; s/ю/yu/g; s/я/ya/gi'<<< "$2"
@@ -265,7 +265,7 @@ HELP
 	l)
 #{{{#{{{
 :<<HELP
-l - 'look up', get online translations by 'trans' app and add the new page to dictionary.
+l - 'look up', allows add or extend page from online by 'trans' an application.
     Example: enrutranslate.sh l peace
    'trans' (https://github.com/soimort/translate-shell) must be installed for this mode
 HELP
