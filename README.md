@@ -3,7 +3,7 @@
 Bash based off-line dictionary for translation English-Russian and Russian-English in Linux terminal.  
 English-Russian - 48523 words  
 Russian-English - 45678 words  
-Only dependent's on: awk, elinks and tar gz  
+Only dependent's on: awk, elinks and tar  
   
 The dictionaries originally ported from chm files.  
 There was a 'Far'-file manager's plugin project. Thanks to the authors.  
@@ -52,13 +52,13 @@ $ ruentranslate.sh p документ
 ### Instalation:  
 Download and install the Git command line extension. You only have to set up Git LFS once.  
 git lfs install  
-git clone --depth=1 https://github.com/vycb/translatecli.git   
+git clone --depth=1 https://github.com/vycb/translatecli.git  
 Add enrutranslate.sh somewhere into PATH (~/bin)  
 Create symbolic link ruentranslate.sh (for russian-engliah dictionary)  
-For example: cd ~/bin; ln -s ~/bin/enrutranslate.sh  ~/bin/ruentranslate.sh 
+For example: cd ~/bin; ln -s ~/bin/enrutranslate.sh  ~/bin/ruentranslate.sh  
 Add to .bashrc path of cloned repo. For example: export TRANSLATECLI_HOME="$HOME/.vim/doc/translatecli"  
-For look up mod 'trans' application should be installed. See https://github.com/soimort/translate-shell.   
-Also, to lookup in thesaurus.altervista.org, we need to register there, and add reg-key in .config file.  
+For look up mod 'trans' application should be installed. See https://github.com/soimort/translate-shell.  
+Also, to lookup in thesaurus.altervista.org, we need to register there, and add reg-key in .config file.   
   
 $ enrutranslate.sh -h  
 Usage:  
