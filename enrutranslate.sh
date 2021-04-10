@@ -1,6 +1,9 @@
 #! /bin/bash -
 #. /home/bin/bashruntime.sh
 
+GZ='zstd --rm' #gzip
+ZE=zst
+
 if [ $# -eq 0 -o  "$1" = 'h' -o  "$1" = '-h'  -o "$1" = '--help' ];then
 	#awk '/HELP$/{H=1;}; /^HELP$/{H=0}; !/HELP$|^HELP$/{if(H){print}}' "$0" #{{{
   sed -n '/^:<<HELP$/,/^HELP$/{//!p}' "$0"  #/HELP$/d
@@ -23,7 +26,7 @@ urlencode(){
 getpage(){
 	#tar -xjOf $lang'translate.tar.bz2' toc.csv | \#{{{#{{{
 	#unzip -c $lang'translate.zip' toc.csv | \#}}}
-	tar -xzOf $lang'translate.tar.gz' toc.csv | \
+	tar -xOf $lang'translate.tar.'$ZE toc.csv | \
 	awk -v se="${1}" 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 1}
     {
 			#tmp=match($2, se)
@@ -36,7 +39,7 @@ getpage(){
 getelinks(){
 #{{{
 ( elinks -no-references -no-numbering -dump )<  \
-    <(tar -xzOf $lang'translate.tar.gz' "$1")
+    <(tar -xOf $lang'translate.tar.'$ZE "$1")
 } #}}}
 
 pageout(){
@@ -47,7 +50,7 @@ pageout(){
 	#debug :$1:$2:$#:$extension:
 	echo -e "PAGEVAR\n$page\nPAGEVAR"
 	if [ $extension = 'txt' ]; then
-		tar -xzOf $lang'translate.tar.gz' "$page"
+		tar -xOf $lang'translate.tar.'$ZE "$page"
 	else
 		getelinks "$page"
 	fi
@@ -86,7 +89,7 @@ HELP
     #debug :$1:$2:$#:
     #unzip -c $lang'translate.zip' toc.csv | \#{{{
     #tar -xjOf $lang'translate.tar.bz2' toc.csv | \#}}}
-    tar -xzOf $lang'translate.tar.gz' toc.csv | \
+    tar -xOf $lang'translate.tar.'$ZE toc.csv | \
 			awk -v se="$2" 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
     {
       if( $2 ~ se ) print $2;
@@ -99,8 +102,8 @@ HELP
 g/gr - grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
 HELP
 #}}}
-	tar -xzOf $lang'translate.tar.gz' toc.csv |grep -i "$2"
-	tar -tvzf $lang'translate.tar.gz' |grep -i "$2"
+	tar -xOf $lang'translate.tar.'$ZE toc.csv |grep -i "$2"
+	tar -tvf $lang'translate.tar.'$ZE |grep -i "$2"
 #}}}
 		;;
 
@@ -110,13 +113,13 @@ HELP
 ts - full text search in dictionary. Example: enrutranslate.sh ts look
 HELP
 #}}}
-	for file in `tar -tvzf $lang'translate.tar.gz'|awk '{print $6}'`;do
+	for file in `tar -tvzf $lang'translate.tar.'$ZE|awk '{print $6}'`;do
 		ext="${file##*.}"
 		#echo ext:$ext
 		if [[ "$ext" =~ dic || ! "$ext" || ( "$ext" != txt && "$ext" != htm ) ]]; then continue; fi
 		echo -n .
 		if [ $ext = 'txt' ]; then
-			out=`tar -xzOf $lang'translate.tar.gz' "$file"|grep -i "$2"`
+			out=`tar -xzOf $lang'translate.tar.'$ZE "$file"|grep -i "$2"`
 		else
 			out=`getelinks "$file"|grep -i "$2"`
 		fi
@@ -179,7 +182,7 @@ HELP
       se="$3"
 			pg="$4"
   fi
-	gzip -df $lang'translate.tar.gz'
+	$GZ -df $lang'translate.tar.'$ZE
 	tar -xOf $lang'translate.tar' toc.csv | \
 	awk -v se="^$se" -v wo="$2" -v pg="$pg" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE=0; ins=0}
     {
@@ -190,7 +193,7 @@ HELP
 	tar --delete -f $lang'translate.tar' toc.csv
 	tar -u -f $lang'translate.tar' toc.csv
 	tar -r -f $lang'translate.tar' "$pg"
-	gzip $lang'translate.tar'
+	$GZ $lang'translate.tar'
 	#}}}
 		;;
 
@@ -202,7 +205,7 @@ d - delete a page from dictionary. Example: enrutranslate.sh d "look up" dic/loo
 HELP
 #}}}
  	page=$(getpage "$2")
-	tar -xzOf $lang'translate.tar.gz' toc.csv | \
+	tar -xzOf $lang'translate.tar.$ZE' toc.csv | \
 	awk -v se="$2" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 1; ins=0}
     {
       if(ins==0 && $2 == se )
@@ -216,13 +219,13 @@ HELP
 		page="$3"
 		echo 2:"$page"
 	fi
-	gzip -df $lang'translate.tar.gz'
+	$GZ -df $lang'translate.tar.$ZE'
 	if tar -tvf $lang'translate.tar' |grep -q $page ;then
 		tar --delete -f $lang'translate.tar' $page #$page
 	fi
 	tar --delete -f $lang'translate.tar' toc.csv
 	tar -u -f $lang'translate.tar' toc.csv
-	gzip $lang'translate.tar'
+	$GZ $lang'translate.tar'
 #}}}
 		;;
 
@@ -236,7 +239,7 @@ e - same as 'r' replace, but add a content from file in 'dic' to content in dict
 HELP
 #}}}
 	page=$(getpage "$2")
-	tar -xzOf $lang'translate.tar.gz' toc.csv | \
+	tar -xzOf $lang'translate.tar.'$ZE toc.csv | \
 	awk -v se="$2" -v pg="$3" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
       if(ins==0 && $2 == se ){ print "\"" $2 "\",\"" pg "\""; ins=1; }
@@ -245,7 +248,7 @@ HELP
 		}' >toc.csv
 	#debug :$1:$2:$#:$extension:
 	filen=$page
-	if ! tar -tvzf $lang'translate.tar.gz' |grep -q "$page" ;then
+	if ! tar -tvzf $lang'translate.tar.'$ZE |grep -q "$page" ;then
 		ext="${page##*.}"
 		test ext = htm && ext=txt || ext=htm
 		filen="${page%.*}.a.$ext"
@@ -253,12 +256,12 @@ HELP
 
 	test "$1"  = e && (temp=`cat "$3"`;getelinks "$filen" >"$3"; echo "$temp" >> "$3")
 
-	gzip -df $lang'translate.tar.gz'
+	$GZ -df $lang'translate.tar.'$ZE
 	tar --delete -f $lang'translate.tar' "$filen" #$page
 	tar -u -f $lang'translate.tar' "$3" #$page
 	tar --delete -f $lang'translate.tar' toc.csv
 	tar -u -f $lang'translate.tar' toc.csv
-	gzip $lang'translate.tar'
+	$GZ $lang'translate.tar'
 #}}}
 		;;
 
@@ -299,7 +302,7 @@ HELP
 	fi
 	trans :ru+en "$2" |tee -a $filen
 
-	tar -xzOf $lang'translate.tar.gz' toc.csv | \
+	tar -xOf $lang'translate.tar.'$ZE toc.csv | \
 	awk -v se="$se" -v pg="$filen" -v wo="$2" -v new="$new" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
       if(ins==0 && new==0 && $2 == se || new==1 && ins==0 && $2 ~ se){
@@ -309,12 +312,12 @@ HELP
 			else
 				print;
 		}' >toc.csv
-	gzip -df $lang'translate.tar.gz'
+	$GZ -df $lang'translate.tar.'$ZE
 	tar --delete -f $lang'translate.tar' "$page"
 	tar -u -f $lang'translate.tar' "$filen"
 	tar --delete -f $lang'translate.tar' toc.csv
 	tar -u -f $lang'translate.tar' toc.csv
-	gzip $lang'translate.tar'
+	$GZ $lang'translate.tar'
 #}}}
 		;;
 
@@ -325,13 +328,13 @@ diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslat
 HELP
 #}}}
 	#debugging=1
-	#toc=`tar -xzOf $lang'translate.tar.gz' toc.csv|
+	#toc=`tar -xzOf $lang'translate.tar.$ZE' toc.csv|
 			#awk 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
     #{print $3 }'`
 	declare -A TOC LIST
 	while read -r line; do
 		TOC[$line]=1
-	done <<<`tar -xzOf $lang'translate.tar.gz' toc.csv|
+	done <<<`tar -xzOf $lang'translate.tar.'$ZE toc.csv|
 			awk 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
     {print $3 }'`
 	echo TOC:${#TOC[@]}:
@@ -339,7 +342,7 @@ HELP
 
 	while read -r line; do
 		LIST[$line]=1
-	done <<< `tar -tvzf $lang'translate.tar.gz'|grep -v dic/$ | grep dic/ |awk '{print $6}'`
+	done <<< `tar -tvzf $lang'translate.tar.'$ZE|grep -v dic/$ | grep dic/ |awk '{print $6}'`
 	echo LIST:${#LIST[@]}:
 
 	if [[ ${#TOC[@]} -lt ${#LIST[@]} ]];then
@@ -385,7 +388,7 @@ HELP
 			#(( diff++  ))
 		#fi
 		#(( list++  ))
-	#done <<< `tar -tvzf $lang'translate.tar.gz'|grep -v dic/$ | grep dic/ |awk '{print $6}'`
+	#done <<< `tar -tvzf $lang'translate.tar.$ZE'|grep -v dic/$ | grep dic/ |awk '{print $6}'`
 	#echo
 	#echo list:$list:
 #}}}
@@ -398,7 +401,7 @@ b - make a backup of dictionary. Example: enrutranslate.sh b
 HELP
 #}}}
 	suf=`date +"%Y%m%d%H%M%S"`
-	cp -f $lang'translate.tar.gz' $lang'translate-'$suf'.tar.gz'
+	cp -f $lang'translate.tar.'$ZE $lang'translate-'$suf'.tar.$ZE'
 #}}}
 		;;
 
