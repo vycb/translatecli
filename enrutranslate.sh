@@ -278,7 +278,8 @@ HELP
 	if [[ ! "$cnt" =~ 'There is no page' ]]; then
 		page=$(echo "$cnt"|awk '/PAGEVAR/{next}{print;exit 1}')
 		filen=${page%.*}.txt
-		echo "$cnt"| sed -e '/^PAGEVAR$/,/^PAGEVAR$/d'|tee $page.txt|tee $filen
+# 		filen=${filen/\.htm/}.txt
+		echo "$cnt"| sed -e '/^PAGEVAR$/,/^PAGEVAR$/d'|tee $filen
 		echo -----|tee -a $filen
 		se=$2
 		new=0
@@ -286,7 +287,6 @@ HELP
 		# This is a new page, then add same as add mode
 		filen=${2// /-}
 		filen="dic/$filen.txt"
-		#filen=dic/${filen,,}.txt
 		if [[ ${#2} -gt 3 ]]; then
 			#let ln=${#2}-3
 			se=${2:0:3}
@@ -296,7 +296,7 @@ HELP
 		new=1
 	fi
 	cnt=$(thesaurus "$1" "$2" "$3")
-	if ! grep -q 'unexpected close tag'<<<"$cnt" && [ -n "$cnt" ]; then
+	if ! grep -q 'unexpected close tag'<<<"$cnt" && [[ -n $cnt ]]; then
 		echo "$cnt"|tee -a "$filen"
 		echo -----|tee -a "$filen"
 	fi
@@ -401,7 +401,7 @@ b - make a backup of dictionary. Example: enrutranslate.sh b
 HELP
 #}}}
 	suf=`date +"%Y%m%d%H%M%S"`
-	cp -f $lang'translate.tar.'$ZE $lang'translate-'$suf'.tar.$ZE'
+	cp -f $lang'translate.tar.'$ZE $lang'translate-'$suf'.tar.'$ZE
 #}}}
 		;;
 
