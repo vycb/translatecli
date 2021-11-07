@@ -90,7 +90,7 @@ HELP
     #unzip -c $lang'translate.zip' toc.csv | \#{{{
     #tar -xjOf $lang'translate.tar.bz2' toc.csv | \#}}}
     tar -xOf $lang'translate.tar.'$ZE toc.csv | \
-			awk -v se="$2" 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 0}
+			awk -v se="$2" 'BEGIN{FS="\",\"|^\"|\"$"; RS="\"\n";IGNORECASE = 1}
     {
       if( $2 ~ se ) print $2;
     }'
