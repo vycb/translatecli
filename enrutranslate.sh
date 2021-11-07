@@ -305,7 +305,7 @@ HELP
 	tar -xOf $lang'translate.tar.'$ZE toc.csv | \
 	awk -v se="$se" -v pg="$filen" -v wo="$2" -v new="$new" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
-      if(ins==0 && new==0 && $2 == se || new==1 && ins==0 && $2 ~ se){
+      if(ins==0 && new==0 && $2 == se || new==1 && ins==0 && $2 ~ "^"se){
 				if(new==1) print;
 			 	print "\"" wo "\",\"" pg "\""; ins=1;
 			}
