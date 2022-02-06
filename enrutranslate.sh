@@ -16,6 +16,19 @@ fi #}}}
 
 : ${TRANSLATECLI_HOME:="$HOME/.vim/doc/englishtranslate"}
 
+buftmp()
+{	#{{{
+	set -f
+	local dt=$(date +'%Y%m%d%H%M%S')
+	cat >/tmp/buftmp$dt
+	if [[ ${#@} -gt 0 ]];then
+		cat /tmp/buftmp$dt >$1
+	else
+		#Use: but buftmp |tee Lynx.trace
+		cat /tmp/buftmp$dt
+	fi
+} #}}}
+
 urlencode(){
 	awk 'BEGIN {while (y++ < 125) zword[sprintf("%c", y)] = y} #{{{
 	{while (y = substr($0, ++j, 1))
@@ -73,7 +86,7 @@ thesaurus(){
 #  echo $lang arglen:$#
 cd $TRANSLATECLI_HOME #> /dev/null 2>&1
 
-if [[ $# -eq 1 ]] && [ "$1" != b ] &&  [ "$1" != diff ] && [ "$1" != cd ]; then
+if [[ $# -eq 1 ]] && [[ ! $1 =~ b|-diff|cd|-sort ]];then  #&&  [ "$1" != -diff ] && [ "$1" != cd ] && [ "$1" != -sort ]; then
 	mode=p #{{{
 else
 	mode=$1
@@ -99,7 +112,8 @@ HELP
 	g|gr)
 #{{{#{{{
 :<<HELP
-g/gr - grep dictionary file archive and content of toc.csv. Example: enrutranslate.sh g look
+g/gr - grep dictionary file archive and content of toc.csv.
+       Example: enrutranslate.sh g look
 HELP
 #}}}
 	tar -xOf $lang'translate.tar.'$ZE toc.csv |grep -i "$2"
@@ -138,10 +152,12 @@ HELP
 #}}}
 	case $lang in
 		enru)
-			sed -e 'y/abvgdjzijcklmnoprstufhyee/абвгджзийкклмнопрстуфхыэе/' -e 'y/ABVGDJZIJKLMNOPRSTUFHYEE/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/' -e 's/yo/ё/gi; s/ts/ц/gi; s/ch/ч/gi; s/sh/ш/gi; s/sh/щ/gi; s/yu/ю/gi; s/ya/я/gi' <<< "$2"
+			sed -e 's/jo/ё/gi; s/yo/ё/gi; s/ts/ц/gi; s/ch/ч/gi; s/sh/ш/gi; s/sh/щ/gi; s/ju/ю/gi; s/yu/ю/gi; s/ja/ья/gi; s/ya/ья/gi'\
+				-e 'y/abvgdgzijcklmnoprstufhyee/абвгджзийкклмнопрстуфхыеэ/'\
+				-e 'y/ABVGDJZIJKLMNOPRSTUFHYEE/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/' <<< "$2"
 			;;
 		ruen)
-			sed -e 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/' -e 'y/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/ABVGDJZIJKLMNOPRSTUFHYEE/' -e 's/[ьъ]//gi; s/ё/yo/gi; s/ц/ts/gi; s/ч/ch/gi; s/ш/sh/gi; s/щ/sh/gi; s/ю/yu/g; s/я/ya/gi'<<< "$2"
+			sed -e 's/[ьъ]//gi; s/ё/yo/gi; s/ц/ts/gi; s/ч/ch/gi; s/ш/sh/gi; s/щ/sh/gi; s/ю/yu/g; s/я/ya/gi' -e 'y/абвгджзийклмнопрстуфхыэе/abvgdjzijklmnoprstufhyee/' -e 'y/АБВГДЖЗИЙКЛМНОПРСТУФХЫЭЕ/ABVGDJZIJKLMNOPRSTUFHYEE/' <<< "$2"
 			;;
 	esac #}}}
 	;;
@@ -149,11 +165,19 @@ HELP
 	tr*)
 #{{{{{{
 :<<HELP
-tr/tro -translate online with trans :ru+en. Example: enrutranslate.sh tr "look up"
+tr -translate online with trans :ru+en. Example: enrutranslate.sh tr "look up"
 HELP
 #}}}
-		trans :ru+en "$2" #}}}
-		;;
+	case $lang in
+		enru)
+			dir='en:ru'
+			;;
+		ruen)
+			dir='ru:en'
+			;;
+	esac
+		trans $dir "$2"
+		;; #}}}
 
 	th*)
 #{{{{{{
@@ -201,7 +225,7 @@ HELP
 #{{{#{{{
 :<<HELP
 d - delete a page from dictionary. Example: enrutranslate.sh d "look up" dic/lookup.txt
-    A 3-d argument is optional, it's need in case if there is no entry in index file toc.csv
+    A 3-d argument is optional. One is mandatory in case if there is no entry in toc file(toc.csv)
 HELP
 #}}}
  	page=$(getpage "$2")
@@ -232,14 +256,14 @@ HELP
 	e|r)
 #{{{#{{{
 :<<HELP
-r - replace a content from 'dic' directory.
+r - replace a content from ./dic directory.
     Example: enrutranslate.sh r "look up" dic/lookup.txt
-e - same as 'r' replace, but add a content from file in 'dic' to content in dictionary.
+e - same as 'r' replace, but add a content from a file from ./dic to content of a page.
     Example: enrutranslate.sh e "look up" dic/lookup.txt
 HELP
 #}}}
 	page=$(getpage "$2")
-	tar -xzOf $lang'translate.tar.'$ZE toc.csv | \
+	tar -xzOf $lang'translate.tar.'$ZE toc.csv|\
 	awk -v se="$2" -v pg="$3" 'BEGIN{FS="\",\"|^\"|\"$";IGNORECASE = 0; ins=0}
     {
       if(ins==0 && $2 == se ){ print "\"" $2 "\",\"" pg "\""; ins=1; }
@@ -248,13 +272,13 @@ HELP
 		}' >toc.csv
 	#debug :$1:$2:$#:$extension:
 	filen=$page
-	if ! tar -tvzf $lang'translate.tar.'$ZE |grep -q "$page" ;then
-		ext="${page##*.}"
-		test ext = htm && ext=txt || ext=htm
-		filen="${page%.*}.a.$ext"
-	fi
+# 	if ! tar -tvzf $lang'translate.tar.'$ZE |grep -q "$page" ;then
+# 		ext="${page##*.}"
+# 		test $ext = htm && ext=txt || ext=htm
+# 		filen="${page%.*}.$ext"
+# 	fi
 
-	test "$1"  = e && (temp=`cat "$3"`;getelinks "$filen" >"$3"; echo "$temp" >> "$3")
+	test "$1" = e && (temp=`cat "$3"`;getelinks "$filen" >"$3"; echo "$temp" >> "$3")
 
 	$GZ -df $lang'translate.tar.'$ZE
 	tar --delete -f $lang'translate.tar' "$filen" #$page
@@ -321,10 +345,10 @@ HELP
 #}}}
 		;;
 
-	diff)
+	-diff)
 #{{{#{{{
 :<<HELP
-diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff
+-diff - compare entries of toc.csv and pages in dictionary. Example: enrutranslate.sh diff
 HELP
 #}}}
 	#debugging=1
@@ -394,6 +418,21 @@ HELP
 #}}}
 		;;
 
+	-sort)
+#{{{#{{{
+:<<HELP
+-sort - sort a toc.csv. Example: enrutranslate.sh sort
+HELP
+#}}}
+	$GZ -df $lang'translate.tar.'$ZE
+	tar -xf $lang'translate.tar' toc.csv
+	tar --delete -f $lang'translate.tar' toc.csv
+	sort -k1 -f -t, toc.csv|buftmp toc.csv
+	tar -u -f $lang'translate.tar' toc.csv
+	$GZ $lang'translate.tar'
+	#}}}
+		;;
+
 	b)
 #{{{#{{{
 :<<HELP
@@ -427,9 +466,8 @@ HELP
 		pageout "$mode" "$1" "$2" | sed -e '/^PAGEVAR$/,/^PAGEVAR$/d' #}}}
 		;;
 
-
 esac
 
 cd - > /dev/null 2>&1
 
-# vim: ts=2 sw=2 noet foldmethod=marker :
+# vim: ts=2 sw=2 noet fdm=marker
